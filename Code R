@@ -1,0 +1,151 @@
+Regression 
+
+##loading libraries
+library(plm)
+library(tidyverse)
+library(readxl)
+library(gplots)
+library(ggplot2)
+library(foreign)
+library(AER)
+library(dbplyr)
+library(stargazer)
+library(strucchange)
+library(lmtest)
+library(ivmodel)
+library(summarytools)
+
+# Import dataset
+bs2 <- read_excel("Documents/thèse /Data /pdata7.xlsx", 
+                      sheet = "Feuille 3")
+bc2 <- read_excel("Documents/thèse /Data /pdata7.xlsx", 
+                  sheet = "Feuille 8")
+fc2 <- read_excel("Documents/thèse /Data /pdata7.xlsx", 
+                  sheet = "Feuille 9")
+
+#Conversion 2
+bs2.panel_data <- pdata.frame(bs2, index=c("Country", "Year"), drop.index = TRUE)
+bc2.panel_data <- pdata.frame(bc2, index=c("Country", "Year"), drop.index = TRUE)
+fc2.panel_data <- pdata.frame(fc2, index=c("Country", "Year"), drop.index = TRUE)
+
+# Fixed effect model with base sample 
+demographic_12 <-plm (Log.GDP.P ~ Log.PD  +
+                       + Log.LE + Natural.resources.rents 
+                     + WAP + Log.CM  + ROI
+                     ,
+                     data= bs2.panel_data,
+                     na.rm= TRUE, robust = "HC0", model= "within" )
+demographic_13 <-plm (Log.GDP.P ~ Log.PD  +
+                        + Log.LE + Natural.resources.rents 
+                      + WAP + Log.CM  + ROI + Political.violence
+                      ,
+                      data= bs2.panel_data,
+                      na.rm= TRUE, robust = "HC0", model= "within" )
+
+demographic_14 <-plm (Log.GDP.P ~ Log.PD  +
+                        + Log.LE + Natural.resources.rents 
+                      + WAP  + Log.CM  + ROI + Political.violence + EDRI
+                      ,
+                      data= bs2.panel_data,
+                      na.rm= TRUE, robust = "HC0", model= "within" )
+
+demographic_15 <-plm (Log.GDP.P ~ Log.PD +
+                        + Log.LE + Natural.resources.rents 
+                      + WAP + Log.CM  + ROI + Political.violence + EDRI
+                      + Equality.before.the.law
+                      ,
+                      data= bs2.panel_data,
+                      na.rm= TRUE, robust = "HC0", model= "within" )
+stargazer(demographic_12, demographic_13, demographic_14,demographic_15,
+          title = "Fixed effect OLS (base sample)",
+          align = TRUE, type = "html")
+
+# Fixed effect model with Common law countries
+demographic_16 <-plm (Log.GDP.P ~ Log.PD  +
+                       + Log.LE + Natural.resources.rents 
+                     + WAP + Log.CM  + ROI
+                     ,
+                     data= bc2.panel_data,
+                     na.rm= TRUE, robust = "HC0", model= "within" )
+demographic_17 <-plm (Log.GDP.P ~ Log.PD  +
+                        + Log.LE + Natural.resources.rents 
+                      + WAP + Log.CM  + ROI + Political.violence
+                      ,
+                      data= bc2.panel_data,
+                      na.rm= TRUE, robust = "HC0", model= "within" )
+
+demographic_18 <-plm (Log.GDP.P ~ Log.PD  +
+                        + Log.LE + Natural.resources.rents 
+                      + WAP  + Log.CM  + ROI + Political.violence + EDRI
+                      ,
+                      data= bc2.panel_data,
+                      na.rm= TRUE, robust = "HC0", model= "within" )
+
+demographic_19 <-plm (Log.GDP.P ~ Log.PD +
+                        + Log.LE + Natural.resources.rents 
+                      + WAP + Log.CM  + ROI + Political.violence + EDRI
+                      + Equality.before.the.law
+                      ,
+                      data= bc2.panel_data,
+                      na.rm= TRUE, robust = "HC0", model= "within" )
+stargazer(demographic_16, demographic_17, demographic_18,demographic_19,
+          title = "Fixed effect OLS (Common law countries)",
+          align = TRUE, type = "html")
+
+# Fixed effect model with Civil law countries
+demographic_20 <-plm (Log.GDP.P ~ Log.PD  +
+                       + Log.LE + Natural.resources.rents 
+                     + WAP + Log.CM  + ROI
+                     ,
+                     data= fc2.panel_data,
+                     na.rm= TRUE, robust = "HC0", model= "within" )
+demographic_21 <-plm (Log.GDP.P ~ Log.PD  +
+                        + Log.LE + Natural.resources.rents 
+                      + WAP + Log.CM  + ROI + Political.violence
+                      ,
+                      data= fc2.panel_data,
+                      na.rm= TRUE, robust = "HC0", model= "within" )
+
+demographic_22 <-plm (Log.GDP.P ~ Log.PD  +
+                        + Log.LE + Natural.resources.rents 
+                      + WAP  + Log.CM  + ROI + Political.violence + EDRI
+                      ,
+                      data= fc2.panel_data,
+                      na.rm= TRUE, robust = "HC0", model= "within" )
+
+demographic_23 <-plm (Log.GDP.P ~ Log.PD +
+                        + Log.LE + Natural.resources.rents 
+                      + WAP + Log.CM  + ROI + Political.violence + EDRI
+                      + Equality.before.the.law
+                      ,
+                      data= fc2.panel_data,
+                      na.rm= TRUE, robust = "HC0", model= "within" )
+stargazer(demographic_20, demographic_21, demographic_22,demographic_23,
+          title = "Fixed effect OLS (Civil law countries)",
+          align = TRUE, type = "html")
+
+#Regression fixed effect with different sample 
+demographic_9 <-plm (Log.GDP.P ~ Log.PD +
+                       + Log.LE + Natural.resources.rents 
+                     + WAP + Log.CM  + ROI + Political.violence + EDRI
+                     + Equality.before.the.law,
+                       data= bs2.panel_data,
+                       na.rm= TRUE, robust = "HC0", model= "within" )
+demographic_10  <-plm (Log.GDP.P ~ Log.PD +
+                         + Log.LE + Natural.resources.rents 
+                       + WAP + Log.CM  + ROI + Political.violence + EDRI
+                       + Equality.before.the.law,
+                        data= bc2.panel_data,
+                        na.rm= TRUE, robust = "HC0", model= "within" )
+demographic_11  <-plm (Log.GDP.P ~ Log.PD +
+                         + Log.LE + Natural.resources.rents 
+                       + WAP + Log.CM  + ROI + Political.violence + EDRI
+                       + Equality.before.the.law,
+                         data= fc2.panel_data,
+                         na.rm= TRUE, robust = "HC0", model= "within" )
+
+stargazer(demographic_9, demographic_10, demographic_11,
+          title= "Fixed effect OLS (with differents samples)",
+          column.labels = c("Base Sample", "Common law", "Civil law"),
+          align = TRUE, type = "html")
+
