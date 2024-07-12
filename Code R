@@ -149,3 +149,29 @@ stargazer(demographic_9, demographic_10, demographic_11,
           column.labels = c("Base Sample", "Common law", "Civil law"),
           align = TRUE, type = "html")
 
+#calculate the mean of each country for the interest variables 
+country_means_GDP <- bs2 %>%
+  group_by(Country) %>%
+  summarize(mean_value = mean(`GDP`, na.rm = TRUE))
+print(country_means)
+
+country_means_PD <- bs2 %>%
+  group_by(Country) %>%
+  summarize(mean_value = mean(`Population density`, na.rm = TRUE))
+print(country_means_PD)
+
+country_means_LE <- bs2 %>%
+  group_by(Country) %>%
+  summarize(mean_value = mean(`Life expectancy`, na.rm = TRUE))
+print(country_means_LE)
+
+Country_means_Political_violence <- bs2 %>%
+  group_by(Country) %>%
+  summarize (meanmean_value = mean(`Political violence`, na.rm = TRUE))
+print(Country_means_Political_violence)
+
+Country_means_WAP <- bs2 %>%
+  group_by(Country) %>%
+  summarize (meanmean_value = mean(`WAP`, na.rm = TRUE))
+print(Country_means_WAP)
+
