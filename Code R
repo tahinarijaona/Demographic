@@ -210,6 +210,30 @@ stargazer(Fertility_1, Fertility_2, Fertility_3, Fertility_4,
           title = "Fixed effect OLS (Base sample)",
           align = TRUE, type = "html")
 
+#Random effect (Density and fecondity)
+random <-plm (Log.GDP.P ~ Log.PD + Log.LE
+                        + Natural.resources.rents 
+                      + WAP + Log.CM + Political.violence + EDRI
+                      + Democracy 
+                      ,
+                      data= bs2.panel_data,
+                      na.rm= TRUE, robust = "HC0", model= "random" )
+
+random_2 <-plm (Log.GDP.P ~ Log.FR + Log.LE
+              + Natural.resources.rents 
+              + WAP + Log.CM + Political.violence + EDRI
+              + Democracy 
+              ,
+              data= bs3.panel_data,
+              na.rm= TRUE, robust = "HC0", model= "random" )
+
+#Hauman test 
+hausman_test1 <- phtest(Density_3, random)
+print(hausman_test1)
+
+hausman_test2 <- phtest(Fertility_3, random_2)
+print(hausman_test2)
+
 #calculate the mean of each country for the interest variables 
 country_means_GDP <- bs2 %>%
   group_by(Country) %>%
