@@ -22,11 +22,13 @@ bc2 <- read_excel("Documents/thèse /Data /pdata7.xlsx",
                   sheet = "Feuille 8")
 fc2 <- read_excel("Documents/thèse /Data /pdata7.xlsx", 
                   sheet = "Feuille 9")
+bs3 <- read_excel("Documents/thèse /Data /bs3.xlsx")
 
 #Conversion 2
 bs2.panel_data <- pdata.frame(bs2, index=c("Country", "Year"), drop.index = TRUE)
 bc2.panel_data <- pdata.frame(bc2, index=c("Country", "Year"), drop.index = TRUE)
 fc2.panel_data <- pdata.frame(fc2, index=c("Country", "Year"), drop.index = TRUE)
+bs3.panel_data <- pdata.frame(bs3, index=c("Country", "Year"), drop.index = TRUE)
 
 # Fixed effect model with base sample 
 demographic_12 <-plm (Log.GDP.P ~ Log.PD  +
@@ -233,6 +235,125 @@ print(hausman_test1)
 
 hausman_test2 <- phtest(Fertility_3, random_2)
 print(hausman_test2)
+
+# Fixed effect models with base sample 
+Fixed_1 <- plm(Log.GDP.P ~ Log.PD + Log.FR + Log.LE + Natural.resources.rents + 
+                   WAP + Log.CM + Political.violence  ,  
+                 data = bs3.panel_data, 
+                 na.action = na.omit, 
+                 model = "within", 
+                 vcov = function(x) vcovHC(x, type = "HC0", cluster = "group"))
+
+Fixed_2 <- plm(Log.GDP.P ~ Log.PD + Log.FR + Log.LE + Natural.resources.rents + 
+                   WAP + Log.CM + Political.violence + Democracy.S ,  
+                 data = bs3.panel_data, 
+                 na.action = na.omit, 
+                 model = "within", 
+                 vcov = function(x) vcovHC(x, type = "HC0", cluster = "group"))
+
+Fixed_3 <- plm(Log.GDP.P ~ Log.PD + Log.FR + Log.LE + Natural.resources.rents + 
+                   WAP + Log.CM + Political.violence + Democracy.S + Common.good ,  
+                 data = bs3.panel_data, 
+                 na.action = na.omit, 
+                 model = "within", 
+                 vcov = function(x) vcovHC(x, type = "HC0", cluster = "group"))
+
+Fixed_4 <- plm(Log.GDP.P ~ Log.PD + Log.FR + Log.LE + Natural.resources.rents + 
+                   WAP + Log.CM + Political.violence +  Democracy.S + Common.good + Health.equality ,  
+                 data = bs3.panel_data, 
+                 na.action = na.omit, 
+                 model = "within", 
+                 vcov = function(x) vcovHC(x, type = "HC0", cluster = "group"))
+
+Fixed_5 <- plm(Log.GDP.P ~ Log.PD + Log.FR + Log.LE + Natural.resources.rents + 
+                   WAP + Log.CM ,  
+                 data = bs3.panel_data, 
+                 na.action = na.omit, 
+                 model = "within", 
+                 vcov = function(x) vcovHC(x, type = "HC0", cluster = "group"))
+
+Fixed_6 <- plm(Log.GDP.P ~ Log.PD + Log.FR + Log.LE + Natural.resources.rents + 
+                   WAP + Log.CM + Political.violence  + Democracy.S + Common.good*Log.FR + Health.equality,  
+                 data = bs3.panel_data, 
+                 na.action = na.omit, 
+                 model = "within", 
+                 vcov = function(x) vcovHC(x, type = "HC0", cluster = "group"))
+
+# Stargazer output
+stargazer(Fixed_1, Fixed_2, Fixed_3, Fixed_6,
+          title = "Fixed Effect OLS (Base Sample)",
+          align = TRUE, type = "text",
+          dep.var.labels = "Log(GDP per capita)",
+          covariate.labels = c("Log(Population density)", "Log(Fertility rate)", 
+                               "Log(Life expectancy)", "Natural resources rents", 
+                               "Working age share", "Log(Child mortality)", 
+                               "Political violence", "Democracy",  "Common good", "Health equality", "Common good*Log(Fertility rate)" ),
+          add.lines = list(
+            c("Country Fixed Effects", "Yes", "Yes", "Yes", "Yes","Yes"),
+            c("Year Fixed Effects", "Yes", "Yes", "Yes", "Yes", "Yes")
+          ),
+          notes = "Standard errors clustered by country (HC0).")
+
+# Pooled OLS models 
+Pooled_1 <- plm(Log.GDP.P ~ Log.PD + Log.FR + Log.LE + Natural.resources.rents + 
+                  WAP + Log.CM + Political.violence,  
+                data = bs3.panel_data, 
+                na.action = na.omit, 
+                model = "pooling", 
+                vcov = function(x) vcovHC(x, type = "HC0", cluster = "group"))
+
+Pooled_2 <- plm(Log.GDP.P ~ Log.PD + Log.FR + Log.LE + Natural.resources.rents + 
+                  WAP + Log.CM + Political.violence + Democracy.S,  
+                data = bs3.panel_data, 
+                na.action = na.omit, 
+                model = "pooling", 
+                vcov = function(x) vcovHC(x, type = "HC0", cluster = "group"))
+
+Pooled_3 <- plm(Log.GDP.P ~ Log.PD + Log.FR + Log.LE + Natural.resources.rents + 
+                  WAP + Log.CM + Political.violence + Democracy.S + Common.good,  
+                data = bs3.panel_data, 
+                na.action = na.omit, 
+                model = "pooling", 
+                vcov = function(x) vcovHC(x, type = "HC0", cluster = "group"))
+
+Pooled_4 <- plm(Log.GDP.P ~ Log.PD + Log.FR + Log.LE + Natural.resources.rents + 
+                  WAP + Log.CM + Political.violence + Democracy.S + Common.good + Health.equality,  
+                data = bs3.panel_data, 
+                na.action = na.omit, 
+                model = "pooling", 
+                vcov = function(x) vcovHC(x, type = "HC0", cluster = "group"))
+
+Pooled_5 <- plm(Log.GDP.P ~ Log.PD + Log.FR + Log.LE + Natural.resources.rents + 
+                  WAP + Log.CM,  
+                data = bs3.panel_data, 
+                na.action = na.omit, 
+                model = "pooling", 
+                vcov = function(x) vcovHC(x, type = "HC0", cluster = "group"))
+
+Pooled_6 <- plm(Log.GDP.P ~ Log.PD + Log.FR + Log.LE + Natural.resources.rents + 
+                  WAP + Log.CM + Political.violence + Democracy.S + Common.good*Log.FR + Health.equality,  
+                data = bs3.panel_data, 
+                na.action = na.omit, 
+                model = "pooling", 
+                vcov = function(x) vcovHC(x, type = "HC0", cluster = "group"))
+
+# Stargazer output for pooled OLS
+stargazer(Pooled_1, Pooled_2, Pooled_3, Pooled_4, Pooled_6,
+          title = "Pooled OLS (Base Sample) - Robustness Check",
+          align = TRUE, 
+          type = "html",
+          dep.var.labels = "Log(GDP per capita)",
+          covariate.labels = c("Log(Population density)", "Log(Fertility rate)", 
+                               "Log(Life expectancy)", "Natural resources rents", 
+                               "Working age share", "Log(Child mortality)", 
+                               "Political violence", "Democracy", "Common good", 
+                               "Health equality", "Common good*Log(Fertility rate)"),
+          add.lines = list(
+            c("Country Fixed Effects", "No", "No", "No", "No"),
+            c("Year Fixed Effects", "No", "No", "No", "No")
+          ),
+          notes = "Standard errors clustered by country (HC0).")
+
 
 #calculate the mean of each country for the interest variables 
 country_means_GDP <- bs2 %>%
